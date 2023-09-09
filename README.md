@@ -1,2 +1,4 @@
 # looseroo
-Simple web service for redirect metrics
+
+The loose roo hops along redirects.
+
