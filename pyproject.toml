@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "looseroo"
-version = "0.1.0"
+name = "hopper"
+version = "1.0.0"
 description = "The loose roo hops redirects"
 authors = ["datadave <605409+datadavev@users.noreply.github.com>"]
 license = "MIT"
@@ -12,12 +12,20 @@ fastapi = "^0.103.1"
 httpx = "^0.24.1"
 
 [tool.poetry.scripts]
-hopper = "hopper.cli:main"
+roo = "hopper.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
 uvicorn = "^0.23.2"
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning.substitution]
+folders=[ {path="hopper"}]

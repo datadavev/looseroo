@@ -9,12 +9,10 @@ import fastapi
 import fastapi.middleware.cors
 import hopper
 
-__version__ = "0.1.0"
-
 app = fastapi.FastAPI(
     title="Hopper",
     description=__doc__,
-    version=__version__,
+    version=hopper.__version__,
     contact={"name": "Dave Vieglais", "url": "https://github.com/datadavev/looseroo"},
     license_info={
         "name": "MIT",

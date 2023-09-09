@@ -5,6 +5,9 @@ import typing
 import dataclasses
 import httpx
 
+__version__ = "1.0.0"
+
+
 # A vercel hobby instance can run for 10 seconds
 # Change this value if your deployment supports longet connections
 DEFAULT_TIMEOUT: float = 9.0

@@ -17,7 +17,7 @@ class EnhancedJSONEncoder(json.JSONEncoder):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="hopper",
+        prog="roo",
         description="Report on redirect hops when dereferencing a URL"
     )
     parser.add_argument("url", help="URL to dereference.")
