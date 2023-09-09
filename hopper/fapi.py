@@ -54,12 +54,16 @@ def get_api():
 @app.get(
     "/{url:path}",
     summary="Follow redirects for provided URL.",
-    response_model=hopper.Hops,
+    #response_model=hopper.Hops,
 )
 def do_hops(request: fastapi.Request, url: str):
     accept = request.headers.get("accept", None)
     user_agent = request.headers.get("user-agent", None)
-    return hopper.follow_redirects(url, accept=accept, user_agent=user_agent)
+    return {
+        "url": request.url,
+        "hopper": hopper.follow_redirects(url, accept=accept, user_agent=user_agent)
+    }
+
 
 
 if __name__ == "__main__":
