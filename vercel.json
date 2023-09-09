@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "builds": [
+      {"src": "hopper/fapi.py", "use": "@vercel/python"}
+    ],
+    "routes": [
+      {"src": "/(.*)", "dest": "hopper/fapi.py"}
+    ],
+    "env": {
+      "APP_MODULE": "hopper.fapi:app"
+  }
+}
