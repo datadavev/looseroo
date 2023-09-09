@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "looseroo"
+version = "0.1.0"
+description = "The loose roo hops redirects"
+authors = ["datadave <605409+datadavev@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.103.1"
+httpx = "^0.24.1"
+pydantic = "^2.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+uvicorn = "^0.23.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
