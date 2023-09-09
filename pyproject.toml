@@ -10,7 +10,6 @@ readme = "README.md"
 python = "^3.9"
 fastapi = "^0.103.1"
 httpx = "^0.24.1"
-pydantic = "^2.3.0"
 
 [tool.poetry.scripts]
 hopper = "hopper.cli:main"
