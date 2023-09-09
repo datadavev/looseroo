@@ -63,7 +63,7 @@ def follow_redirects(
             except ValueError:
                 message = "Response terminated at 500k."
                 response.close()
-            results.t_ms = time.time() - t0
+            results.t_ms = (time.time() - t0)*1000.0
             results.message = message
             for r in response.history:
                 results.hops.append(
@@ -90,5 +90,5 @@ def follow_redirects(
             return results
     except Exception as e:
         results.message = str(e)
-        results.t_ms = time.time() - t0
+        results.t_ms = (time.time() - t0)*1000.0
     return results
