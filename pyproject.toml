@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hopper"
-version = "1.0.1"
+version = "1.1.0"
 description = "The loose roo hops redirects"
 authors = ["datadave <605409+datadavev@users.noreply.github.com>"]
 license = "MIT"
@@ -19,6 +19,8 @@ pytest = "^7.4.2"
 uvicorn = "^0.23.2"
 
 [tool.poetry-dynamic-versioning]
+# Use POETRY_DYNAMIC_VERSIONING_BYPASS env var to set
+# and run "poetry dynamic-versioning" to update code entries.
 enable = true
 vcs = "git"
 style = "semver"
