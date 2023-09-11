@@ -32,7 +32,7 @@ class Hops:
     message: typing.Optional[str] = None
     accept: typing.Optional[str] = None
     user_agent: typing.Optional[str] = None
-    version: str = __version__
+    hopper_version: str = __version__
 
 
 def fix_url(url):
