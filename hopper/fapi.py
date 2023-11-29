@@ -50,18 +50,24 @@ def get_api():
     return fastapi.responses.RedirectResponse(url="/api")
 
 
+def do_hops(request: fastapi.Request, url: str, accept: str=None, user_agent:str=None, method:str=None):
+    if accept is None:
+        accept = request.headers.get("accept", None)
+    if user_agent is None:
+        user_agent = request.headers.get("user-agent", None)
+    if method is None:
+        method = request.method
+    url = urllib.parse.unquote(url)
+    return hopper.follow_redirects(url, accept=accept, user_agent=user_agent, method=method)
+
+
 @app.get(
     "/{url:path}",
     summary="Follow redirects for provided URL.",
     response_model=hopper.Hops,
 )
-def do_hops(request: fastapi.Request, url: str, accept: str=None, user_agent:str=None):
-    if accept is None:
-        accept = request.headers.get("accept", None)
-    if user_agent is None:
-        user_agent = request.headers.get("user-agent", None)
-    url = urllib.parse.unquote(url)
-    return hopper.follow_redirects(url, accept=accept, user_agent=user_agent)
+def get_hops(request: fastapi.Request, url: str, accept: str=None, user_agent:str=None, method:str=None):
+    return do_hops(request, url, accept, user_agent, method)
 
 
 if __name__ == "__main__":

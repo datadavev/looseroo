@@ -3,8 +3,8 @@
 The loose roo hops along redirects.
 
 ```
-roo --help
-usage: roo [-h] [-a ACCEPT] [-u USER_AGENT] [-t TIMEOUT] url
+$ roo --help
+usage: roo [-h] [-a ACCEPT] [-u USER_AGENT] [-t TIMEOUT] [-m METHOD] url
 
 Report on redirect hops when dereferencing a URL
 
@@ -19,6 +19,8 @@ options:
                         User-agent header value for request
   -t TIMEOUT, --timeout TIMEOUT
                         Timeout in seconds for response
+  -m METHOD, --method METHOD
+                        HTTP method to use for requests```
 ```
 
 or visit:
