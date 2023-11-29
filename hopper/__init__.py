@@ -12,7 +12,13 @@ __version__ = "1.1.0"
 # Change this value if your deployment supports longet connections
 DEFAULT_TIMEOUT: float = 9.0
 
+# The default http method to use for requests.
+DEFAULT_METHOD = "GET"
+
+# Pattern to match a http or https url
 RE_PROTOCOL = re.compile(r"^(https?)(:\/{1})([\w+])", flags=re.IGNORECASE)
+
+HTTP_METHODS = ("GET", "HEAD", "POST", "PUT")
 
 @dataclasses.dataclass
 class Hop:
@@ -43,6 +49,7 @@ def follow_redirects(
     accept: typing.Optional[str] = None,
     user_agent: typing.Optional[str] = None,
     timeout: float = DEFAULT_TIMEOUT,
+    method: str = DEFAULT_METHOD
 ) -> Hops:
     url = fix_url(url)
     headers = {}
@@ -52,12 +59,16 @@ def follow_redirects(
         headers["Accept"] = accept
     message = None
     results = Hops(start_url=url, t_ms=0, hops=[], message=message)
+    method = method.strip().upper()
+    if method not in HTTP_METHODS:
+        results.message = f"Error: method must be one of {', '.join(HTTP_METHODS)}"
+        return results
     t0 = time.time()
     try:
         max_bytes = 1024 * 500
         received = 0
         with httpx.stream(
-            "GET", url, headers=headers, follow_redirects=True, timeout=timeout
+            method, url, headers=headers, follow_redirects=True, timeout=timeout
         ) as response:
             try:
                 for chunk in response.iter_bytes(1024):
