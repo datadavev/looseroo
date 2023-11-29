@@ -20,6 +20,7 @@ RE_PROTOCOL = re.compile(r"^(https?)(:\/{1})([\w+])", flags=re.IGNORECASE)
 
 HTTP_METHODS = ("GET", "HEAD", "POST", "PUT")
 
+
 @dataclasses.dataclass
 class Hop:
     url: str
@@ -44,12 +45,13 @@ class Hops:
 def fix_url(url):
     return RE_PROTOCOL.sub(r"\1://\3", url)
 
+
 def follow_redirects(
     url: str,
     accept: typing.Optional[str] = None,
     user_agent: typing.Optional[str] = None,
     timeout: float = DEFAULT_TIMEOUT,
-    method: str = DEFAULT_METHOD
+    method: str = DEFAULT_METHOD,
 ) -> Hops:
     url = fix_url(url)
     headers = {}
@@ -78,7 +80,7 @@ def follow_redirects(
             except ValueError:
                 message = "Response terminated at 500k."
                 response.close()
-            results.t_ms = (time.time() - t0)*1000.0
+            results.t_ms = (time.time() - t0) * 1000.0
             results.message = message
             for r in response.history:
                 results.hops.append(
@@ -105,5 +107,5 @@ def follow_redirects(
             return results
     except Exception as e:
         results.message = str(e)
-        results.t_ms = (time.time() - t0)*1000.0
+        results.t_ms = (time.time() - t0) * 1000.0
     return results
