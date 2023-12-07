@@ -5,7 +5,7 @@ import typing
 import dataclasses
 import httpx
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 
 # A vercel hobby instance can run for 10 seconds
