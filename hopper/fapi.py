@@ -4,10 +4,11 @@ FastAPI interface to hopper.
 Service to report on the redirect hops needed to reach the
 resource identified by a URL.
 """
-
+import logging
 import urllib.parse
 import fastapi
 import fastapi.middleware.cors
+import json_logging
 import hopper
 
 app = fastapi.FastAPI(
@@ -22,6 +23,13 @@ app = fastapi.FastAPI(
     openapi_url="/api/v1/openapi.json",
     docs_url="/api",
 )
+logger = logging.getLogger("roo")
+
+try:
+    json_logging.init_fastapi(enable_json=True)
+    json_logging.init_request_instrument(app)
+except RuntimeError:
+    logger.warning("json_logging already initialized.")
 
 # Enables CORS for UIs on different domains
 app.add_middleware(
@@ -82,16 +90,3 @@ def get_hops(
     method: str = None,
 ):
     return do_hops(request, url, accept, user_agent, method)
-
-
-if __name__ == "__main__":
-    try:
-        import uvicorn
-
-        uvicorn.run(
-            "fapi:app",
-            reload=True,
-        )
-    except ImportError as e:
-        print("Unable to run as uvicorn is not available.")
-        print(e)

@@ -46,6 +46,10 @@ def fix_url(url):
     return RE_PROTOCOL.sub(r"\1://\3", url)
 
 
+def as_int(v: typing.Union[int, str])->int:
+    return int(v)
+
+
 def follow_redirects(
     url: str,
     accept: typing.Optional[str] = None,
@@ -89,7 +93,7 @@ def follow_redirects(
                         status=r.status_code,
                         t_ms=r.elapsed.total_seconds() * 1000.0,
                         content_type=r.headers.get("content-type", None),
-                        content_length=r.headers.get("content-length", 0),
+                        content_length=as_int(r.headers.get("content-length", 0)),
                     )
                 )
             results.hops.append(
@@ -98,7 +102,7 @@ def follow_redirects(
                     status=response.status_code,
                     t_ms=response.elapsed.total_seconds() * 1000.0,
                     content_type=response.headers.get("content-type", None),
-                    content_length=response.headers.get("content-length", 0),
+                    content_length=as_int(response.headers.get("content-length", 0)),
                 )
             )
             results.accept = response.request.headers.get("accept", None)
