@@ -5,6 +5,7 @@ Service to report on the redirect hops needed to reach the
 resource identified by a URL.
 """
 import logging
+import os
 import urllib.parse
 import fastapi
 import fastapi.middleware.cors
