@@ -16,6 +16,8 @@ import starlette.responses
 
 import hopper
 
+BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
+
 app = fastapi.FastAPI(
     title="Hopper",
     description=__doc__,
@@ -67,7 +69,7 @@ async def get_favicon():
 @app.get("/", include_in_schema=False)
 def get_api():
     logging.info("get /")
-    return starlette.responses.FileResponse("static/index.html")
+    return starlette.responses.FileResponse(os.path.join(BASE_FOLDER, "static/index.html"))
     #return fastapi.responses.RedirectResponse(url="/api")
 
 
@@ -106,4 +108,4 @@ def get_hops(
     if url.lower().startswith("http"):
         return do_hops(request, url, accept, user_agent, method)
     logger.info("starlette")
-    return starlette.responses.FileResponse(url)
+    return starlette.responses.FileResponse(os.path.join(BASE_FOLDER, url))
