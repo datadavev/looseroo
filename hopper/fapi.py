@@ -6,10 +6,14 @@ resource identified by a URL.
 """
 import logging
 import os
+import sys
 import urllib.parse
 import fastapi
 import fastapi.middleware.cors
+import fastapi.staticfiles
 import json_logging
+import starlette.responses
+
 import hopper
 
 app = fastapi.FastAPI(
@@ -25,6 +29,8 @@ app = fastapi.FastAPI(
     docs_url="/api",
 )
 logger = logging.getLogger("roo")
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(sys.stderr))
 
 try:
     json_logging.init_fastapi(enable_json=True)
@@ -48,6 +54,10 @@ app.add_middleware(
     ],
 )
 
+#app.mount(
+#    "/", fastapi.staticfiles.StaticFiles(directory="static", html=True), name="static"
+#)
+
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def get_favicon():
@@ -56,7 +66,9 @@ async def get_favicon():
 
 @app.get("/", include_in_schema=False)
 def get_api():
-    return fastapi.responses.RedirectResponse(url="/api")
+    logging.info("get /")
+    return starlette.responses.FileResponse("static/index.html")
+    #return fastapi.responses.RedirectResponse(url="/api")
 
 
 def do_hops(
@@ -90,4 +102,8 @@ def get_hops(
     user_agent: str = None,
     method: str = None,
 ):
-    return do_hops(request, url, accept, user_agent, method)
+    logger.info("URL = %s", url)
+    if url.lower().startswith("http"):
+        return do_hops(request, url, accept, user_agent, method)
+    logger.info("starlette")
+    return starlette.responses.FileResponse(url)

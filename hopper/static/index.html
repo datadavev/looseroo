@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Hopper</title>
+    <script src="static/main.js"></script>
+</head>
+<body>
+<label for="target">URL to evaluate:</label>
+<input id="target" name="target" type="text" size="40"/>
+<button id="submit" name="submit" type="submit" onclick="doLoadUrl()">Submit</button>
+<div>
+    <pre id="output"></pre>
+</div>
+<script>
+    const inp = document.getElementById("target");
+    const url_pattern = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
+    const loc = document.location.hash.match(url_pattern);
+    inp.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("submit").click();
+        }
+    });
+    if (loc) {
+        inp.value = loc[0];
+        doLoadUrl();
+    }
+</script>
+</body>
+</html>
