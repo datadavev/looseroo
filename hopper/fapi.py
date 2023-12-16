@@ -114,5 +114,5 @@ def get_hops(
     return hopper.Hops(
         hops=[],
         start_url=url,
-        message="Unsupported target",
+        message="Target is not a http url.",
     )

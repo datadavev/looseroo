@@ -4,17 +4,49 @@
     <meta charset="UTF-8">
     <title>Hopper</title>
     <script src="static/main.js"></script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        "@type": "WebPage",
+        "name": "Hopper",
+        "description": "hopperis a service that connects to a user provided URL, follows redirects to the ultimate target, and reports the hops taken.",
+        "author": {
+            "@type": "Person",
+            "name": "datadavev",
+            "identifier": "https://orcid.org/0000-0002-6513-4996"
+        },
+        "license": "https://opensource.org/license/mit",
+        "subjectOf": "https://github.com/datadavev/looseroo"
+    }
+    </script>
 </head>
 <body>
+<header>
+    <h1>Hopper</h1>
+    <details>
+        <summary>About</summary>
+    <p><code>hopper</code> is a service that connects to a user provided URL, follows redirects
+        to the ultimate target, and reports the hops taken.
+    </p>
+    <p>Visit the hopper <a href="/api">API</a>.</p>
+    <p>Project on <a href="https://github.com/datadavev/looseroo">GitHub</a>.</p>
+    </details>
+</header>
+<main>
+    <p>
 <label for="target">URL to evaluate:</label>
-<input id="target" name="target" type="text" size="40"/>
+    </p><p>
+<input id="target" name="target" type="text" size="80" placeholder="URL"/>
+    </p>
+    <p>
 <button id="submit" name="submit" type="submit" onclick="doLoadUrl()">Submit</button>
-<div>
+    </p>
+<section>
     <pre id="output"></pre>
-</div>
+</section>
+</main>
 <script>
     const inp = document.getElementById("target");
-    const url_pattern = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
     const loc = document.location.hash.match(url_pattern);
     inp.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
