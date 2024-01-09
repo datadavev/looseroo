@@ -1,6 +1,7 @@
 const url_pattern = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi);
 const target_input_id = "target"
 const output_target_id = "output";
+const accept_input_id = "accept";
 
 
 function setSpinner(spinner_state){
@@ -15,11 +16,12 @@ function setSpinner(spinner_state){
 }
 
 
-async function loadUrl(url) {
+async function loadUrl(url, accept) {
     setSpinner(true);
-    var api_url = "/" + encodeURIComponent(url);
+    let api_url = new URL("/" + encodeURIComponent(url), document.location.href);
+    api_url.searchParams.append("accept", accept);
     try {
-        const response = await fetch(api_url);
+        const response = await fetch(api_url.href);
         const data = await response.json();
         const ele = document.getElementById(output_target_id);
         setSpinner(false)
@@ -32,7 +34,7 @@ async function loadUrl(url) {
 }
 
 function doLoadUrl() {
-    const target_ele = document.getElementById(target_input_id);
-    const url = target_ele.value;
-    loadUrl(url);
+    const url = document.getElementById(target_input_id).value;
+    const accept = document.getElementById(accept_input_id).value;
+    loadUrl(url, accept);
 }

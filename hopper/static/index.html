@@ -38,8 +38,19 @@
     </p><p>
 <input id="target" name="target" type="text" size="80" placeholder="URL"/>
     </p>
+    <details>
+        <summary>Options:</summary>
+        <p>
+            <label for="accept">
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept" target="_blank">Accept header</a> value:
+            </label>
+        </p>
+        <p>
+            <input id="accept" name="accept" type="text" size="80" value="*/*" />
+        </p>
+    </details>
     <p>
-<button id="submit" name="submit" type="submit" onclick="doLoadUrl()">Submit</button>
+        <button id="submit" name="submit" type="submit" onclick="doLoadUrl()">Submit</button>
     </p>
 <section>
     <pre id="output"></pre>
