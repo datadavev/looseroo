@@ -21,16 +21,16 @@ roo = "hopper.__main__:main"
 pytest = "^7.4.2"
 uvicorn = "^0.23.2"
 
-[tool.poetry-dynamic-versioning]
+#[tool.poetry-dynamic-versioning]
 # Use POETRY_DYNAMIC_VERSIONING_BYPASS env var to set
 # and run "poetry dynamic-versioning" to update code entries.
-enable = true
-vcs = "git"
-style = "semver"
+#enable = true
+#vcs = "git"
+#style = "semver"
 
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+#[build-system]
+#requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+#build-backend = "poetry_dynamic_versioning.backend"
 
-[tool.poetry-dynamic-versioning.substitution]
-folders=[ {path="hopper"}]
+#[tool.poetry-dynamic-versioning.substitution]
+#folders=[ {path="hopper"}]
