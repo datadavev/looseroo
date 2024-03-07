@@ -6,7 +6,7 @@ import typing
 import dataclasses
 import httpx
 
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 
 
 # A vercel hobby instance can run for 10 seconds
@@ -67,7 +67,7 @@ class Hop:
     status: int
     content_type: typing.Optional[str] = None
     content_length: int = 0
-    links: typing.List[typing.Dict[str, typing.Any]] = dataclasses.field(default_factory=list)
+    link: typing.List[typing.Dict[str, typing.Any]] = dataclasses.field(default_factory=list)
     t_ms: float = 0
 
 
@@ -131,7 +131,6 @@ def follow_redirects(
             for r in response.history:
                 _links = []
                 _link = r.headers.get("link", None)
-                print(_link)
                 if _link is not None:
                     try:
                         _links = parse_link_header(_link)
@@ -145,12 +144,11 @@ def follow_redirects(
                         t_ms=r.elapsed.total_seconds() * 1000.0,
                         content_type=r.headers.get("content-type", None),
                         content_length=as_int(r.headers.get("content-length", 0)),
-                        links=_links,
+                        link=_links,
                     )
                 )
             _links = []
             _link = response.headers.get("link", None)
-            print(_link)
             if _link is not None:
                 try:
                     _links = parse_link_header(_link)
@@ -164,7 +162,7 @@ def follow_redirects(
                     t_ms=response.elapsed.total_seconds() * 1000.0,
                     content_type=response.headers.get("content-type", None),
                     content_length=as_int(response.headers.get("content-length", 0)),
-                    links=_links,
+                    link=_links,
                 )
             )
             results.accept = response.request.headers.get("accept", None)
