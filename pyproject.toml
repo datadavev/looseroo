@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hopper"
-version = "1.6.0"
+version = "1.6.1"
 description = "The loose roo hops redirects"
 authors = ["datadave <605409+datadavev@users.noreply.github.com>"]
 license = "MIT"
@@ -8,8 +8,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.103.1"
-httpx = "^0.24.1"
+fastapi = "^0"
+httpx = "^0"
 json-logging = "^1.3.0"
 
 [tool.poetry.scripts]
@@ -19,7 +19,7 @@ roo = "hopper.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
-uvicorn = "^0.23.2"
+uvicorn = "^0"
 
 #[tool.poetry-dynamic-versioning]
 # Use POETRY_DYNAMIC_VERSIONING_BYPASS env var to set
