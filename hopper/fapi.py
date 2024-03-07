@@ -7,21 +7,20 @@ resource identified by a URL.
 import logging
 import os
 import sys
-import urllib.parse
 import fastapi
 import fastapi.middleware.cors
 import fastapi.staticfiles
 import json_logging
 import starlette.responses
 
-import hopper
+from hopper import (__version__, routes)
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
 app = fastapi.FastAPI(
     title="Hopper",
     description=__doc__,
-    version=hopper.__version__,
+    version=__version__,
     contact={"name": "Dave Vieglais", "url": "https://github.com/datadavev/looseroo"},
     license_info={
         "name": "MIT",
@@ -76,43 +75,6 @@ def get_api():
     )
     #return fastapi.responses.RedirectResponse(url="/api")
 
-
-def do_hops(
-    request: fastapi.Request,
-    url: str,
-    accept: str = None,
-    user_agent: str = None,
-    method: str = None,
-):
-    if accept is None:
-        accept = request.headers.get("accept", None)
-    if user_agent is None:
-        user_agent = request.headers.get("user-agent", None)
-    if method is None:
-        method = request.method
-    url = urllib.parse.unquote(url)
-    return hopper.follow_redirects(
-        url, accept=accept, user_agent=user_agent, method=method
-    )
-
-
-@app.get(
-    "/{url:path}",
-    summary="Follow redirects for provided URL.",
-    response_model=hopper.Hops,
+app.include_router(
+    routes.router,
 )
-def get_hops(
-    request: fastapi.Request,
-    url: str,
-    accept: str = None,
-    user_agent: str = None,
-    method: str = None,
-):
-    logger.info("URL = %s", url)
-    if url.lower().startswith("http"):
-        return do_hops(request, url, accept, user_agent, method)
-    return hopper.Hops(
-        hops=[],
-        start_url=url,
-        message="Target is not a http url.",
-    )

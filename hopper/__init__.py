@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 import typing
@@ -21,12 +22,52 @@ RE_PROTOCOL = re.compile(r"^(https?)(:\/{1})([\w+])", flags=re.IGNORECASE)
 HTTP_METHODS = ("GET", "HEAD", "POST", "PUT")
 
 
+def parse_link_header(value):
+    """Return a list of parsed link headers proxies.
+
+    i.e. Link: <http:/.../front.jpeg>; rel=front; type="image/jpeg",<http://.../back.jpeg>; rel=back;type="image/jpeg"
+
+    :rtype: list
+    """
+
+    links = []
+
+    replace_chars = " '\""
+
+    value = value.strip(replace_chars)
+    if not value:
+        return links
+
+    for val in re.split(", *<", value):
+        try:
+            url, params = val.split(";", 1)
+        except ValueError:
+            url, params = val, ""
+
+        link = {"url": url.strip("<> '\"")}
+
+        for param in params.split(";"):
+            try:
+                key, value = param.split("=")
+            except ValueError:
+                break
+
+            link[key.strip(replace_chars)] = value.strip(replace_chars)
+
+        links.append(link)
+
+    return links
+
+
+
+
 @dataclasses.dataclass
 class Hop:
     url: str
     status: int
     content_type: typing.Optional[str] = None
     content_length: int = 0
+    links: typing.List[typing.Dict[str, typing.Any]] = dataclasses.field(default_factory=list)
     t_ms: float = 0
 
 
@@ -57,6 +98,7 @@ def follow_redirects(
     timeout: float = DEFAULT_TIMEOUT,
     method: str = DEFAULT_METHOD,
 ) -> Hops:
+    L = logging.getLogger("hopper")
     url = fix_url(url)
     headers = {}
     if user_agent is not None:
@@ -87,6 +129,15 @@ def follow_redirects(
             results.t_ms = (time.time() - t0) * 1000.0
             results.message = message
             for r in response.history:
+                _links = []
+                _link = r.headers.get("link", None)
+                print(_link)
+                if _link is not None:
+                    try:
+                        _links = parse_link_header(_link)
+                    except Exception as e:
+                        L.exception(e)
+                        _links.append({"error": str(e)})
                 results.hops.append(
                     Hop(
                         url=str(r.url),
@@ -94,8 +145,18 @@ def follow_redirects(
                         t_ms=r.elapsed.total_seconds() * 1000.0,
                         content_type=r.headers.get("content-type", None),
                         content_length=as_int(r.headers.get("content-length", 0)),
+                        links=_links,
                     )
                 )
+            _links = []
+            _link = response.headers.get("link", None)
+            print(_link)
+            if _link is not None:
+                try:
+                    _links = parse_link_header(_link)
+                except Exception as e:
+                    L.exception(e)
+                    _links.append({"error": str(e)})
             results.hops.append(
                 Hop(
                     url=str(response.url),
@@ -103,6 +164,7 @@ def follow_redirects(
                     t_ms=response.elapsed.total_seconds() * 1000.0,
                     content_type=response.headers.get("content-type", None),
                     content_length=as_int(response.headers.get("content-length", 0)),
+                    links=_links,
                 )
             )
             results.accept = response.request.headers.get("accept", None)
