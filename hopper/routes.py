@@ -5,6 +5,7 @@ This module may be used in other FastAPI applications to provide hopper function
 """
 
 import logging
+import typing
 import urllib.parse
 import fastapi
 
@@ -23,6 +24,7 @@ def do_hops(
     accept: str = None,
     user_agent: str = None,
     method: str = None,
+    white_hosts: typing.Optional[str] = None,
 ):
     if accept is None:
         accept = request.headers.get("accept", None)
@@ -30,9 +32,13 @@ def do_hops(
         user_agent = request.headers.get("user-agent", None)
     if method is None:
         method = request.method
+    if white_hosts is None:
+        white_hosts = []
+    else:
+        white_hosts = white_hosts.split(",")
     url = urllib.parse.unquote(url)
     return follow_redirects(
-        url, accept=accept, user_agent=user_agent, method=method
+        url, accept=accept, user_agent=user_agent, method=method, white_hosts=white_hosts
     )
 
 
@@ -47,10 +53,11 @@ async def get_hops(
     accept: str = None,
     user_agent: str = None,
     method: str = None,
+    white_hosts: str = None
 ):
     logger.info("URL = %s", url)
     if url.lower().startswith("http"):
-        return do_hops(request, url, accept, user_agent, method)
+        return do_hops(request, url, accept, user_agent, method, white_hosts)
     return Hops(
         hops=[],
         start_url=url,
