@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 import typing
@@ -5,7 +6,7 @@ import typing
 import dataclasses
 import httpx
 
-__version__ = "1.3.0"
+__version__ = "1.6.2"
 
 
 # A vercel hobby instance can run for 10 seconds
@@ -21,12 +22,52 @@ RE_PROTOCOL = re.compile(r"^(https?)(:\/{1})([\w+])", flags=re.IGNORECASE)
 HTTP_METHODS = ("GET", "HEAD", "POST", "PUT")
 
 
+def parse_link_header(value):
+    """Return a list of parsed link headers proxies.
+
+    i.e. Link: <http:/.../front.jpeg>; rel=front; type="image/jpeg",<http://.../back.jpeg>; rel=back;type="image/jpeg"
+
+    :rtype: list
+    """
+
+    links = []
+
+    replace_chars = " '\""
+
+    value = value.strip(replace_chars)
+    if not value:
+        return links
+
+    for val in re.split(", *<", value):
+        try:
+            url, params = val.split(";", 1)
+        except ValueError:
+            url, params = val, ""
+
+        link = {"url": url.strip("<> '\"")}
+
+        for param in params.split(";"):
+            try:
+                key, value = param.split("=")
+            except ValueError:
+                break
+
+            link[key.strip(replace_chars)] = value.strip(replace_chars)
+
+        links.append(link)
+
+    return links
+
+
+
+
 @dataclasses.dataclass
 class Hop:
     url: str
     status: int
     content_type: typing.Optional[str] = None
     content_length: int = 0
+    link: typing.List[typing.Dict[str, typing.Any]] = dataclasses.field(default_factory=list)
     t_ms: float = 0
 
 
@@ -46,6 +87,10 @@ def fix_url(url):
     return RE_PROTOCOL.sub(r"\1://\3", url)
 
 
+def as_int(v: typing.Union[int, str])->int:
+    return int(v)
+
+
 def follow_redirects(
     url: str,
     accept: typing.Optional[str] = None,
@@ -56,6 +101,7 @@ def follow_redirects(
 ) -> Hops:
     if white_hosts is None:
         white_hosts = []
+    L = logging.getLogger("hopper")
     url = fix_url(url)
     headers = {}
     if user_agent is not None:
@@ -75,6 +121,14 @@ def follow_redirects(
             while more_work:
                 with client.stream(method, url, headers=headers, follow_redirects=False, timeout=timeout) as response:
                     response.close()
+                    _links = []
+                    _link = response.headers.get("link", None)
+                    if _link is not None:
+                        try:
+                            _links = parse_link_header(_link)
+                        except Exception as e:
+                            L.exception(e)
+                            _links.append({"error": str(e)})
                     results.hops.append(
                         Hop(
                             url=str(response.url),
@@ -82,6 +136,7 @@ def follow_redirects(
                             t_ms=response.elapsed.total_seconds() * 1000.0,
                             content_type=response.headers.get("content-type", None),
                             content_length=response.headers.get("content-length", 0),
+                            link=_links,
                         )
                     )
                 if response.next_request is not None:
@@ -100,4 +155,3 @@ def follow_redirects(
         except Exception as e:
             results.message = str(e)
             results.t_ms = (time.time() - t0) * 1000.0
-    return results
