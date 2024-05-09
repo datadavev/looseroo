@@ -6,7 +6,7 @@ import typing
 import dataclasses
 import httpx
 
-__version__ = "1.6.2"
+__version__ = "1.7.0"
 
 
 # A vercel hobby instance can run for 10 seconds
@@ -135,23 +135,24 @@ def follow_redirects(
                             status=response.status_code,
                             t_ms=response.elapsed.total_seconds() * 1000.0,
                             content_type=response.headers.get("content-type", None),
-                            content_length=response.headers.get("content-length", 0),
+                            content_length=int(response.headers.get("content-length", 0)),
                             link=_links,
                         )
                     )
-                if response.next_request is not None:
-                    url = response.next_request.url
-                else:
-                    url = response.url
-                    more_work = False
-                results.accept = response.request.headers.get("accept", None)
-                results.user_agent = response.request.headers.get("user-agent", None)
-                results.final_url = str(url)
-                if (len(white_hosts) > 0)  and (url.host not in white_hosts):
-                    results.message = "Redirection terminate by host not listed in white hosts."
-                    break
+                    if response.next_request is not None:
+                        url = response.next_request.url
+                    else:
+                        url = response.url
+                        more_work = False
+                    results.accept = response.request.headers.get("accept", None)
+                    results.user_agent = response.request.headers.get("user-agent", None)
+                    results.final_url = str(url)
+                    if (len(white_hosts) > 0)  and (url.host not in white_hosts):
+                        results.message = "Redirection terminate by host not listed in white hosts."
+                        break
 
             results.t_ms = (time.time() - t0) * 1000.0
         except Exception as e:
             results.message = str(e)
             results.t_ms = (time.time() - t0) * 1000.0
+        return results
