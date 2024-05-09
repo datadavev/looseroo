@@ -5,6 +5,7 @@ Service to report on the redirect hops needed to reach the
 resource identified by a URL.
 """
 
+import typing
 import urllib.parse
 import fastapi
 import fastapi.middleware.cors
@@ -56,6 +57,7 @@ def do_hops(
     accept: str = None,
     user_agent: str = None,
     method: str = None,
+    white_hosts: typing.Optional[str] = None,
 ):
     if accept is None:
         accept = request.headers.get("accept", None)
@@ -63,9 +65,13 @@ def do_hops(
         user_agent = request.headers.get("user-agent", None)
     if method is None:
         method = request.method
+    if white_hosts is None:
+        white_hosts = []
+    else:
+        white_hosts = white_hosts.split(",")
     url = urllib.parse.unquote(url)
     return hopper.follow_redirects(
-        url, accept=accept, user_agent=user_agent, method=method
+        url, accept=accept, user_agent=user_agent, method=method, white_hosts=white_hosts
     )
 
 
@@ -80,8 +86,9 @@ def get_hops(
     accept: str = None,
     user_agent: str = None,
     method: str = None,
+    white_hosts: str = None
 ):
-    return do_hops(request, url, accept, user_agent, method)
+    return do_hops(request, url, accept, user_agent, method, white_hosts)
 
 
 if __name__ == "__main__":

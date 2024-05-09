@@ -5,7 +5,7 @@ import typing
 import dataclasses
 import httpx
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 
 # A vercel hobby instance can run for 10 seconds
@@ -52,7 +52,10 @@ def follow_redirects(
     user_agent: typing.Optional[str] = None,
     timeout: float = DEFAULT_TIMEOUT,
     method: str = DEFAULT_METHOD,
+    white_hosts: typing.Optional[list[str]] = None,
 ) -> Hops:
+    if white_hosts is None:
+        white_hosts = []
     url = fix_url(url)
     headers = {}
     if user_agent is not None:
@@ -65,47 +68,36 @@ def follow_redirects(
     if method not in HTTP_METHODS:
         results.message = f"Error: method must be one of {', '.join(HTTP_METHODS)}"
         return results
-    t0 = time.time()
-    try:
-        max_bytes = 1024 * 500
-        received = 0
-        with httpx.stream(
-            method, url, headers=headers, follow_redirects=True, timeout=timeout
-        ) as response:
-            try:
-                for chunk in response.iter_bytes(1024):
-                    received += len(chunk)
-                    if received > max_bytes:
-                        raise ValueError("Max size reached.")
-            except ValueError:
-                message = "Response terminated at 500k."
-                response.close()
-            results.t_ms = (time.time() - t0) * 1000.0
-            results.message = message
-            for r in response.history:
-                results.hops.append(
-                    Hop(
-                        url=str(r.url),
-                        status=r.status_code,
-                        t_ms=r.elapsed.total_seconds() * 1000.0,
-                        content_type=r.headers.get("content-type", None),
-                        content_length=r.headers.get("content-length", 0),
+    with httpx.Client(timeout=timeout, max_redirects=0) as client:
+        t0 = time.time()
+        more_work = True
+        try:
+            while more_work:
+                with client.stream(method, url, headers=headers, follow_redirects=False, timeout=timeout) as response:
+                    response.close()
+                    results.hops.append(
+                        Hop(
+                            url=str(response.url),
+                            status=response.status_code,
+                            t_ms=response.elapsed.total_seconds() * 1000.0,
+                            content_type=response.headers.get("content-type", None),
+                            content_length=response.headers.get("content-length", 0),
+                        )
                     )
-                )
-            results.hops.append(
-                Hop(
-                    url=str(response.url),
-                    status=response.status_code,
-                    t_ms=response.elapsed.total_seconds() * 1000.0,
-                    content_type=response.headers.get("content-type", None),
-                    content_length=response.headers.get("content-length", 0),
-                )
-            )
-            results.accept = response.request.headers.get("accept", None)
-            results.user_agent = response.request.headers.get("user-agent", None)
-            results.final_url = str(response.url)
-            return results
-    except Exception as e:
-        results.message = str(e)
-        results.t_ms = (time.time() - t0) * 1000.0
+                if response.next_request is not None:
+                    url = response.next_request.url
+                else:
+                    url = response.url
+                    more_work = False
+                results.accept = response.request.headers.get("accept", None)
+                results.user_agent = response.request.headers.get("user-agent", None)
+                results.final_url = str(url)
+                if (len(white_hosts) > 0)  and (url.host not in white_hosts):
+                    results.message = "Redirection terminate by host not listed in white hosts."
+                    break
+
+            results.t_ms = (time.time() - t0) * 1000.0
+        except Exception as e:
+            results.message = str(e)
+            results.t_ms = (time.time() - t0) * 1000.0
     return results

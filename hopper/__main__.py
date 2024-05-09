@@ -36,13 +36,20 @@ def main():
     parser.add_argument(
         "-m", "--method", default="GET", help="HTTP method to use for requests"
     )
+    parser.add_argument(
+        "-w", "--whitehosts", default=None, help="Follow redirects on these hosts only."
+    )
     args = parser.parse_args()
+    white_hosts = None
+    if args.whitehosts is not None:
+        white_hosts = args.whitehosts.split(",")
     results = hopper.follow_redirects(
         args.url,
         accept=args.accept,
         user_agent=args.user_agent,
         timeout=args.timeout,
         method=args.method,
+        white_hosts=white_hosts,
     )
     print(json.dumps(results, indent=2, cls=EnhancedJSONEncoder))
     return 0
