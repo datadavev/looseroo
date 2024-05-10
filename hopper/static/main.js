@@ -19,10 +19,10 @@ function setSpinner(spinner_state){
 
 async function loadUrl(url, accept, whitehosts) {
     setSpinner(true);
-    let api_url = new URL("/" + encodeURIComponent(url), document.location.href);
-    api_url.searchParams.append("accept", accept);
+    let api_url = new URL("/" + encodeURIComponent(url.trim()), document.location.href);
+    api_url.searchParams.append("accept", accept.trim());
     if (whitehosts.length > 0) {
-        api_url.searchParams.append("whitehosts", whitehosts);
+        api_url.searchParams.append("whitehosts", whitehosts.trim());
     }
     try {
         const response = await fetch(api_url.href);

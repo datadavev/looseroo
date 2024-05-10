@@ -5,6 +5,7 @@ This module may be used in other FastAPI applications to provide hopper function
 """
 
 import logging
+import re
 import typing
 import urllib.parse
 import fastapi
@@ -35,7 +36,12 @@ def do_hops(
     if white_hosts is None:
         white_hosts = []
     else:
-        white_hosts = white_hosts.split(",")
+        entries = re.split(r',|\s|;', white_hosts)
+        white_hosts = []
+        for entry in entries:
+            entry = entry.strip()
+            if len(entry) > 0:
+                white_hosts.append(entry)
     url = urllib.parse.unquote(url)
     return follow_redirects(
         url, accept=accept, user_agent=user_agent, method=method, white_hosts=white_hosts
