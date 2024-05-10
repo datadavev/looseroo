@@ -53,11 +53,11 @@ async def get_hops(
     accept: str = None,
     user_agent: str = None,
     method: str = None,
-    white_hosts: str = None
+    whitehosts: str = None
 ):
     logger.info("URL = %s", url)
     if url.lower().startswith("http"):
-        return do_hops(request, url, accept, user_agent, method, white_hosts)
+        return do_hops(request, url, accept, user_agent, method, whitehosts)
     return Hops(
         hops=[],
         start_url=url,

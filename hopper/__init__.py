@@ -148,7 +148,7 @@ def follow_redirects(
                     results.user_agent = response.request.headers.get("user-agent", None)
                     results.final_url = str(url)
                     if (len(white_hosts) > 0)  and (url.host not in white_hosts):
-                        results.message = "Redirection terminate by host not listed in white hosts."
+                        results.message = "Redirection terminated by host not listed in white hosts."
                         break
 
             results.t_ms = (time.time() - t0) * 1000.0

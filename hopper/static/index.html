@@ -46,7 +46,21 @@
             </label>
         </p>
         <p>
-            <input id="accept" name="accept" type="text" size="80" value="*/*" />
+            <input id="accept" name="accept" list="accept_options"type="text" size="80" value="*/*" />
+            <datalist id="accept_options">
+                <option selected value="*/*"></option>
+                <option value="text/html"></option>
+                <option value="text/plain"></option>
+                <option value="application/json"></option>
+                <option value="application/ld+json"></option>
+                <option value="application/ld+json,application/json,*/*;q=0.1"></option>
+            </datalist>
+        </p>
+        <p>
+            <label for="whitehosts">Follow redirects on these hosts only:</label>
+        </p>
+        <p>
+            <input id="whitehosts" name="whitehosts" type="text" size="80" placeholder="Any" value="" />
         </p>
     </details>
     <p>
