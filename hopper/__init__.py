@@ -76,6 +76,7 @@ class Hops:
     hops: typing.List[Hop]
     start_url: str
     final_url: typing.Optional[str] = None
+    final_status:int = 0
     t_ms: float = 0
     message: typing.Optional[str] = None
     accept: typing.Optional[str] = None
@@ -147,6 +148,7 @@ def follow_redirects(
                     results.accept = response.request.headers.get("accept", None)
                     results.user_agent = response.request.headers.get("user-agent", None)
                     results.final_url = str(url)
+                    results.final_status = response.status_code
                     if (len(white_hosts) > 0)  and (url.host not in white_hosts):
                         results.message = "Redirection terminated by host not listed in white hosts."
                         break
