@@ -3,6 +3,7 @@ const target_input_id = "target"
 const output_target_id = "output";
 const accept_input_id = "accept";
 const white_input_id = "whitehosts";
+const defaulthost_id = "defaulthost";
 
 
 function setSpinner(spinner_state){
@@ -39,8 +40,18 @@ async function loadUrl(url, accept, whitehosts) {
 
 
 function doLoadUrl() {
-    const url = document.getElementById(target_input_id).value;
+    let url = document.getElementById(target_input_id).value;
     const accept = document.getElementById(accept_input_id).value;
     const whitehosts = document.getElementById(white_input_id).value;
+    let defaulthost = document.getElementById(defaulthost_id).value;
+    const lurl = url.toLowerCase()
+    if (!(lurl.startsWith('http://')) || (lurl.startsWith("https://"))) {
+        defaulthost = defaulthost.trim();
+        if (!defaulthost.endsWith("/")) {
+            defaulthost = defaulthost + "/";
+        }
+        url = url.replace(/^(\s|\/)*/, '');
+        url = `${defaulthost}${url}`
+    }
     loadUrl(url, accept, whitehosts);
 }

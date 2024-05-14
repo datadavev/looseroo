@@ -57,6 +57,16 @@
             </datalist>
         </p>
         <p>
+            <label for="defaulthost">Default host if none provided:</label>
+        </p>
+        <p>
+            <input id="defaulthost" name="defaulthost" list="defaulthost_options" type="text" size="80" value="https://n2t.net/" />
+            <datalist id="defaulthost_options">
+                <option selected value="https://n2t.net/"></option>
+                <option value="https://identifiers.org/"></option>
+            </datalist>
+        </p>
+        <p>
             <label for="whitehosts">Follow redirects on these hosts only, comma separated:</label>
         </p>
         <p>
