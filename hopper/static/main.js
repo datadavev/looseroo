@@ -45,7 +45,7 @@ function doLoadUrl() {
     const whitehosts = document.getElementById(white_input_id).value;
     let defaulthost = document.getElementById(defaulthost_id).value;
     const lurl = url.toLowerCase()
-    if (!(lurl.startsWith('http://')) || (lurl.startsWith("https://"))) {
+    if (!(lurl.startsWith('http://') || lurl.startsWith("https://"))) {
         defaulthost = defaulthost.trim();
         if (!defaulthost.endsWith("/")) {
             defaulthost = defaulthost + "/";
