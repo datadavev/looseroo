@@ -84,8 +84,6 @@ class Hops:
     hopper_version: str = __version__
 
     def has_url(self, url: str) -> bool:
-        if url == self.start_url:
-            return True
         for hop in self.hops:
             if hop.url == url:
                 return True
