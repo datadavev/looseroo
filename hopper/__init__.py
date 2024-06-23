@@ -168,4 +168,4 @@ def follow_redirects(
         except Exception as e:
             results.message = str(e)
             results.t_ms = (time.time() - t0) * 1000.0
-        return results
+    return results
