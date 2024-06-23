@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hopper"
-version = "1.10.0"
+version = "1.10.1"
 
 description = "The loose roo hops redirects"
 authors = ["datadave <605409+datadavev@users.noreply.github.com>"]
