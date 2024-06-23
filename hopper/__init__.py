@@ -83,6 +83,14 @@ class Hops:
     user_agent: typing.Optional[str] = None
     hopper_version: str = __version__
 
+    def has_url(self, url: str) -> bool:
+        if url == self.start_url:
+            return True
+        for hop in self.hops:
+            if hop.url == url:
+                return True
+        return False
+
 
 def fix_url(url):
     return RE_PROTOCOL.sub(r"\1://\3", url)
@@ -130,6 +138,9 @@ def follow_redirects(
                         except Exception as e:
                             L.exception(e)
                             _links.append({"error": str(e)})
+                    if results.has_url(response.url):
+                        results.message = f"Redirection loop detected. Already visited: {response.url}"
+                        break
                     results.hops.append(
                         Hop(
                             url=str(response.url),
